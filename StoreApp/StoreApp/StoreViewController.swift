@@ -31,6 +31,13 @@ class StoreViewController: UIViewController {
         super.didReceiveMemoryWarning()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if let indexPath = tableView.indexPathForSelectedRow {
+            tableView.deselectRow(at: indexPath, animated: true)
+        }
+    }
+
     @objc func setComplete(notification: Notification) {
         guard let userInfo = notification.userInfo else { return }
         guard let section = userInfo[Keyword.sectionPath] else { return }
