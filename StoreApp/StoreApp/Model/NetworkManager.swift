@@ -13,25 +13,21 @@ class NetworkManager {
 
     //shared instance
     static let shared = NetworkManager()
-    private(set) var reachable: Bool = false
+    var reachable: Bool = true
+
+    var isReachable: Bool {
+        guard let reachabilityManager = reachabilityManager else { return false }
+        return reachabilityManager.isReachable
+    }
 
     let reachabilityManager = NetworkReachabilityManager()
 
     func startNetworkReachabilityObserver() {
         reachabilityManager?.listener = { status in
-            switch status {
-            case .notReachable:
-                self.reachable = false
-            case .unknown :
-                self.reachable = false
-            case .reachable(.ethernetOrWiFi):
-                self.reachable = true
-            case .reachable(.wwan):
-                self.reachable = true
-            }
             NotificationCenter.default.post(name: .reachabilityChanged, object: self, userInfo: ["reachabilityStatus":status])
         }
         // start listening
+
         reachabilityManager?.startListening()
     }
 }

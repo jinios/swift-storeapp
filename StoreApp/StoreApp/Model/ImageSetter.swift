@@ -15,7 +15,7 @@ class ImageSetter {
         let cacheURL = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first!
         let imageSavingPath = cacheURL.appendingPathComponent(URL(string: url)!.lastPathComponent)
 
-        if NetworkManager.shared.reachable {
+        if NetworkManager.shared.isReachable {
             ImageSetter.download(url: url, handler: handler)
         } else {
             let imageData = cacheImageData(at: imageSavingPath)
@@ -28,7 +28,7 @@ class ImageSetter {
         let imageSavingPath = cacheURL.appendingPathComponent(URL(string: url)!.lastPathComponent)
 
         if let imageData = cacheImageData(at: imageSavingPath) {
-            handler(imageData) // 네트워크에러일때 cache에서 이미지 가져옴 
+            handler(imageData)  
         } else {
             URLSession.shared.downloadTask(with: URL(string: url)!) { (tmpLocation, response, error) in
                 if let error = error {
@@ -53,6 +53,7 @@ class ImageSetter {
         }
     }
 
+    // 캐시된 이미지를 요청했을때 캐시데이터가 없으면 nil 리턴
     class func cacheImageData(at imageSavingPath: URL) -> Data? {
         guard FileManager().fileExists(atPath: imageSavingPath.path) else { return nil }
             let existData = try? Data(contentsOf: imageSavingPath)
