@@ -11,15 +11,17 @@ import Foundation
 class DataSetter {
 
     class func tryDownload(url: Category, handler: @escaping (([Category:Items]) -> Void)) {
-        if NetworkManager.shared.reachable {
+        if NetworkManager.shared.isReachable {
             DataSetter.set(with: url, handler: handler)
         } else {
-            let result = ItemDataParser.makeStoreItemsFromJSON(with: url)
-            handler(result)
+            DispatchQueue.main.async {
+                let result = ItemDataParser.makeStoreItemsFromJSON(with: url)
+                handler(result)
+            }
         }
     }
 
-    private class func set(with category: Category, handler: @escaping(([Category:Items]) -> Void)) {
+    class func set(with category: Category, handler: @escaping(([Category:Items]) -> Void)) {
         URLSession.shared.dataTask(with: category.url) { [category] (data, response, error) in
             if let response = response as? HTTPURLResponse, response.statusCode == 200, let data = data {
                 let result = ItemDataParser.makeStoreItemsFromSession(category: category, data: data)
@@ -28,6 +30,6 @@ class DataSetter {
                 let result = ItemDataParser.makeStoreItemsFromJSON(with: category)
                 handler(result)
             }
-        }.resume()
+            }.resume()
     }
 }
