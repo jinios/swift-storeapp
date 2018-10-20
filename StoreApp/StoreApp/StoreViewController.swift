@@ -38,19 +38,27 @@ class StoreViewController: UIViewController {
         }
     }
 
+    private func resetTableView(indexPaths: [IndexPath]) {
+        DispatchQueue.main.sync { [weak self] in
+            self?.tableView.beginUpdates()
+            let headerNumber = indexPaths[0][0]
+            let numberOfRows = self!.tableView.numberOfRows(inSection: headerNumber)
+            if numberOfRows > 0 {
+                self?.tableView.deleteRows(at: indexPaths, with: .fade)
+                print(self!.tableView.numberOfRows(inSection: headerNumber))
+            }
+            self?.tableView.insertRows(at: indexPaths, with: .fade)
+            self?.tableView.endUpdates()
+        }
+    }
+
     @objc func setComplete(notification: Notification) {
         guard let userInfo = notification.userInfo else { return }
         guard let section = userInfo[Keyword.sectionPath] else { return }
-        guard let category = section as? Category else { return }
-        self.resetTableView(of: category)
+        guard let sectionNumber = section as? [IndexPath] else { return }
+        self.resetTableView(indexPaths: sectionNumber)
     }
 
-    private func resetTableView(of header: Category) {
-        DispatchQueue.main.async { [weak self] in
-            self?.tableView.reloadSections(IndexSet(integer:header.sectionNumber), with: .automatic)
-        }
-    }
-    
     private func toUnreachableView() {
         if let unreachableVC = self.storyboard?.instantiateViewController(withIdentifier: "unreachableViewController") as? UnreachableViewController {
             self.navigationController?.pushViewController(unreachableVC, animated: true)
