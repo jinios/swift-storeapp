@@ -5,6 +5,7 @@
 ### 주요 기능
 - 네트워크 환경에서 주문하기 기능을 구현한 애플리케이션
 - Slack Web Hook으로 주문하기 기능 수행
+  - 상품 주문 요청시 Slack에서 제공하는 Web Hook 기능과  스위프트 URLSession클래스를 이용하여 Slack 채널에 주문 알림 메시지가 전송되도록 구현
 - 네트워크 연결성 확인: StatusBar 변경으로 연결성 구분
   - `wifi: 파란색` / `WWAN: 하늘색` / `네트워크 유실: 빨간색`
 
@@ -19,7 +20,7 @@
 - [Toaster](github.com/devxoul/Toaster) : 상품 클릭시 화면하단에 Toast기능 실행(안드로이드 Toast메시지 스타일)
 - [Alamofire](https://github.com/Alamofire/Alamofire) : Network Reachability status 확인을 위해 사용
 
-## 공부한 부분
+## 공부한 부분 & Troubleshooting
 ### 데드락(Deadlock)
 - 문제 코드   
 ```swift
@@ -141,5 +142,5 @@ func test() {
         if FileManager().fileExists(atPath: imageSavingPath.path) {
             let imageData = try? Data(contentsOf: imageSavingPath)
             handler(imageData)
-        } else { print("MOVE Error!") }
+        } else { handler(nil) }
 ```
