@@ -11,7 +11,7 @@ import Foundation
 class HashDataSetter {
 
     class func tryDownload(url: URL, handler: @escaping ((ItemHashData?) -> Void)) {
-        if NetworkManager.shared.reachable {
+        if NetworkManager.shared.isReachable {
             HashDataSetter.set(url: url, handler: handler)
         } else {
             handler(nil)

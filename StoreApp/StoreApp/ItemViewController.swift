@@ -16,8 +16,9 @@ class ItemViewController: UIViewController, OrderDelegate {
     @IBOutlet weak var pointLabel: UILabel!
     @IBOutlet weak var deliveryFee: UILabel!
     @IBOutlet weak var deliveryInfo: UILabel!
-    @IBOutlet weak var detailScrollView: ItemDetailScrollView!
     @IBOutlet weak var buyButton: UIButton!
+    @IBOutlet weak var detailStackView: UIStackView!
+
     var itemData: DetailHash! {
         didSet {
             self.detailInfo = itemData.detailItemInfo()
@@ -78,15 +79,17 @@ class ItemViewController: UIViewController, OrderDelegate {
         guard let userInfo = notification.userInfo else { return }
         guard let imageData = userInfo[Notification.Name.detailImageDownloaded] as? [Data?] else { return }
 
-        let scrollImages: [UIImageView] = imageData.map {
-            if let data = $0 {
-                return UIImageView(image: UIImage(data: data))
-            } else {
-                return UIImageView(image: UIImage(named: Keyword.refreshImage.rawValue))
-            }
-        }
+        imageData.forEach { (data) in
+            let imageView = UIImageView(frame: .zero)
+            imageView.contentMode = .scaleAspectFit
 
-        self.detailScrollView.setScrollView(images: scrollImages)
+            if let data = data {
+                imageView.image = UIImage(data: data)
+            } else {
+                imageView.image = UIImage(named: Keyword.refreshImage.rawValue)
+            }
+            self.detailStackView.addArrangedSubview(imageView)
+        }
     }
 
     private func setTitleLabels() {

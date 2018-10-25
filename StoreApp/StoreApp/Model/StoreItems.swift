@@ -10,7 +10,7 @@ import Foundation
 
 class StoreItems {
     static let categories: [Category] = [.main, .soup, .side]
-    var storeItem: [Category: Items]
+    var storeItem: [Category: Items] = [:]
 
     init() {
         self.storeItem = [Category.main: Items(),
@@ -41,12 +41,13 @@ class StoreItems {
     }
 
     private func loadData(of category: Category) {
-        DataSetter.tryDownload(url: category) { items in
+        DataSetter.set(with: category) { items in
             self.update(key: items.keys.first!, value: items.values.first!)
             if let firstKey = items.firstKey {
+                let indexPaths = Array(0..<self.storeItem[firstKey]!.count).map {IndexPath(row: $0, section: firstKey.sectionNumber)}
                 NotificationCenter.default.post(name: .sectionSetComplete,
                                                 object: self,
-                                                userInfo: [Keyword.sectionPath : firstKey])
+                                                userInfo: [Keyword.sectionPath : indexPaths])
             }
         }
     }
